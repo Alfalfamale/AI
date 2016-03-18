@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>AI</title>
+	<script type="application/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mootools/1.6.0/mootools-core-compat.min.js"></script>
+	<script type="application/javascript" src="Rules.js"></script>
+	<script type="application/javascript" src="Input.js"></script>
+	<script type="application/javascript" src="Output.js"></script>
+	<script type="application/javascript" src="Reversi.js"></script>
+</head>
+<body>
+<canvas
+	id="Reversi"
+	width="800"
+	height="800"
+	style="
+		border:1px solid #000000;
+		margin: 0 auto;
+		display: block;
+		background-color: darkgreen
+	"
+>
+
+</canvas>
+<div style="text-align: center;">
+	<span class="TurnText" id="BlackTurnText">Black is playing</span>
+	<span class="TurnText" id="WhiteTurnText">White is playing</span>
+	<span class="TurnText" id="WhiteWinner">White is the winner</span>
+	<span class="TurnText" id="BlackWinner">Black is the winner</span>
+	<span class="TurnText" id="NoWinner">Game ended in a tie</span>
+</div>
+</body>
+</html>
