@@ -1,9 +1,3 @@
-/**
- * @author Rob van den Hout <vdhout@studyportals.eu>
- * @version 1.0.0
- * @copyright © 2016 StudyPortals B.V., all rights reserved.
- */
-
 (function(){
 
 	"use strict";

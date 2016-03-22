@@ -1,9 +1,3 @@
-/**
- * @author Rob van den Hout <vdhout@studyportals.eu>
- * @version 1.0.0
- * @copyright © 2016 StudyPortals B.V., all rights reserved.
- */
-
 var Reversi = {};
 
 (function(){
@@ -13,6 +7,8 @@ var Reversi = {};
 	var Entity = {
 
 		current: 1,
+		player: 1,
+		bot: 2,
 		
 		board: {},
 		states: {
@@ -127,11 +123,15 @@ var Reversi = {};
 
 				Entity.current = new_player;
 				Entity.board = Rules.addOptions(Entity.board, Entity.current);
-				Output.displayStones(Entity.board);
 				Output.displayStatus(Entity.current);
 			}
 
 			Output.displayStones(Entity.board);
+
+			if(new_player === Entity.bot){
+
+				Bot.takeTurn(Entity.board, Entity.bot);
+			}
 		}
 	};
 	

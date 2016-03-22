@@ -1,9 +1,3 @@
-/**
- * @author Rob van den Hout <vdhout@studyportals.eu>
- * @version 1.0.0
- * @copyright © 2016 StudyPortals B.V., all rights reserved.
- */
-
 var Output = {};
 
 (function(){
@@ -67,9 +61,10 @@ var Output = {};
 
 				for(var y = 1; y <= 8; y++){
 
-					if(board[x][y] !== 0){
+					ctx.beginPath();
 
-						ctx.beginPath();
+					if(board[x][y] === 1 || board[x][y] === 2){
+
 						ctx.arc(
 							(h_spacing * x) - (h_spacing / 2),
 							(v_spacing * y) - (v_spacing / 2),
@@ -78,8 +73,20 @@ var Output = {};
 							2*Math.PI
 						);
 						ctx.fillStyle = Reversi.getColor(board[x][y]);
-						ctx.fill();
 					}
+					else if(board[x][y] === 3){
+
+						ctx.arc(
+							(h_spacing * x) - (h_spacing / 2),
+							(v_spacing * y) - (v_spacing / 2),
+							(v_spacing / 2) * 0.2,
+							0,
+							2*Math.PI
+						);
+						ctx.fillStyle = Reversi.getColor(Reversi.current());
+					}
+
+					ctx.fill();
 				}
 			}
 		}
