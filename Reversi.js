@@ -7,7 +7,6 @@ var Reversi = {};
 	var Entity = {
 
 		current: 1,
-		player: 1,
 		bot: 2,
 		
 		board: {},
@@ -19,6 +18,33 @@ var Reversi = {};
 		},
 
 		init: function(){
+
+			var query = window.location.search.substring(1);
+
+			var params = query.split('&');
+
+			for(var i = 0; i < params.length; i++){
+
+				var props = params[i].split('=');
+
+				var key = props[0];
+
+				if(key === 'player'){
+
+					if(props[1] == 'white'){
+
+						this.bot = 1;
+					}
+					else if(props[1] == 'none'){
+
+						this.bot = 0;
+					}
+					else if(props[1] == 'both'){
+
+						this.bot = 3;
+					}
+				}
+			}
 
 			for(var x = 1; x <= 8; x++){
 								
@@ -38,6 +64,18 @@ var Reversi = {};
 			this.board = Rules.addOptions(this.board, this.current);
 			Output.displayStones(this.board);
 			Output.displayStatus(this.current);
+
+			if(Entity.bot === 0){
+
+				setTimeout(function(){
+
+					Bot.takeTurn(Entity.board, Entity.bot);
+				}, 1000);
+			}
+			else if(this.current === this.bot){
+
+				Bot.takeTurn(this.board, this.current);
+			}
 		},
 		
 		flipStones: function(square){
@@ -128,10 +166,29 @@ var Reversi = {};
 
 			Output.displayStones(Entity.board);
 
-			if(new_player === Entity.bot){
+			if(Entity.bot === 0 && new_player !== 0){
 
-				Bot.takeTurn(Entity.board, Entity.bot);
+				setTimeout(function(){
+
+					Bot.takeTurn(Entity.board, Entity.current);
+				}, 1000);
 			}
+
+			else if(new_player === Entity.bot){
+
+				Bot.takeTurn(Entity.board, Entity.current);
+			}
+		}
+		else if(Entity.bot === 0){
+
+			setTimeout(function(){
+
+				Bot.takeTurn(Entity.board, Entity.current);
+			}, 1000);
+		}
+		else if(Entity.current === Entity.bot){
+
+			Bot.takeTurn(Entity.board, Entity.current);
 		}
 	};
 	

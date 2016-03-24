@@ -117,17 +117,21 @@ var Output = {};
 		}
 	};
 
-	Output.displayWinner = function(winner){
+	Output.displayWinner = function(result){
 
 		$$('.TurnText').setStyle('display', 'none');
 
-		if(winner === 1){
+		if(result.black > result.white){
 
 			$('BlackWinner').setStyle('display', 'inline');
+			$('ResultWinner').set('text', '(B: ' + result.black + ' - W: ' + result.white + ')');
+			$('ResultWinner').setStyle('display', 'inline');
 		}
-		else if(winner === 2){
+		else if(result.white > result.black){
 
 			$('WhiteWinner').setStyle('display', 'inline');
+			$('ResultWinner').set('text', '(W: ' + result.white + ' - B: ' + result.black + ')');
+			$('ResultWinner').setStyle('display', 'inline');
 		}
 		else{
 

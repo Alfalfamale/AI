@@ -107,8 +107,6 @@ var Rules = {};
 			new_player = 1;
 		}
 
-		console.log(current, new_player);
-
 		var new_board = Rules.addOptions(board, new_player);
 
 		for(var x = 1; x <= 8; x++){
@@ -152,15 +150,10 @@ var Rules = {};
 			}
 		}
 
-		if(black > white){
-
-			return 1;
-		}
-		if(white > black){
-
-			return 2;
-		}
-		return 0;
+		return {
+			black: black,
+			white: white
+		};
 	};
 
 	document.addEvent('domready', function(){
