@@ -26,5 +26,12 @@ const Settings = {
 		let url = new URL(location.href);
 		url.searchParams.set('remote', hash);
 		location.href = url.href;
+	},
+
+	localGame: function(){
+
+		let url = new URL(location.href);
+		url.searchParams.delete('remote');
+		location.href = url.href;
 	}
 };

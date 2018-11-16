@@ -48,49 +48,53 @@ var Reversi = {};
 
 		init: function(){
 
-			var query = window.location.search.substring(1);
+			let url = new URL(location.href);
+			let params = url.searchParams;
+			let remote = params.has('remote');
+			let player = params.has('player') ? params.get('player') : 'black';
 
-			var params = query.split('&');
+			switch(player){
 
-			for(var i = 0; i < params.length; i++){
+				case 'none':
 
-				var props = params[i].split('=');
+					this.black.type = 'bot';
+					this.white.type = 'bot';
+					this.botgame = true;
+					break;
 
-				var key = props[0];
+				case 'both':
 
-				if(key === 'player'){
+					this.black.type = 'player';
+					this.white.type = 'player';
+					break;
 
-					if(props[1] == 'white'){
+				case 'white':
 
-						this.black.type = 'bot';
-						this.white.type = 'player';
-					}
-					else if(props[1] == 'none'){
+					this.black.type = remote ? 'player' : 'bot';
+					this.black.local = !remote;
+					this.white.type = 'player';
+					break;
 
-						this.black.type = 'bot';
-						this.white.type = 'bot';
-						this.botgame = true;
-					}
-					else if(props[1] == 'both'){
+				case 'black':
 
-						this.black.type = 'player';
-						this.white.type = 'player';
-					}
+					this.black.type = 'player';
+					this.white.type = remote ? 'player' : 'bot';
+					this.white.local = !remote;
+					break;
+			}
+
+			if(remote){
+
+				if(params.get('remote') === 'host'){
+
+					Reversi.isHost();
+					let hash = startRemoteGame(true);
+					alert(hash);
 				}
+				else{
 
-				else if(key === 'remote'){
-
-					if(props[1] === 'host'){
-
-						Reversi.isHost();
-						let hash = startRemoteGame(true);
-						alert(hash);
-					}
-					else{
-
-						Reversi.isSpectator();
-						startRemoteGame(false, props[1]);
-					}
+					Reversi.isSpectator();
+					startRemoteGame(false, params.get('remote'));
 				}
 			}
 
