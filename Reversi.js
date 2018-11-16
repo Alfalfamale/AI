@@ -6,15 +6,44 @@ var Reversi = {};
 
 	var Entity = {
 
+		black: {
+			type: 'human',
+			local: true,
+			side: 1
+		},
+
+		white: {
+			type: 'bot',
+			local: true,
+			side: 2
+		},
+
 		current: 1,
-		bot: 2,
-		
+
+		sides: {
+			1: 'black',
+			2: 'white'
+		},
+
 		board: {},
 		states: {
 			0: 'empty',
 			1: 'black',
 			2: 'white',
 			3: 'grey'
+		},
+
+		botgame: false,
+		host: false,
+		spectator: false,
+
+		awaitingInput: false,
+
+		getCurrentPlayer: function(){
+
+			var current = Entity.current;
+			var side = Entity.sides[current];
+			return Entity[side];
 		},
 
 		init: function(){
@@ -33,25 +62,44 @@ var Reversi = {};
 
 					if(props[1] == 'white'){
 
-						this.bot = 1;
+						this.black.type = 'bot';
+						this.white.type = 'player';
 					}
 					else if(props[1] == 'none'){
 
-						this.bot = 0;
+						this.black.type = 'bot';
+						this.white.type = 'bot';
+						this.botgame = true;
 					}
 					else if(props[1] == 'both'){
 
-						this.bot = 3;
+						this.black.type = 'player';
+						this.white.type = 'player';
+					}
+				}
+
+				else if(key === 'remote'){
+
+					if(props[1] === 'host'){
+
+						Reversi.isHost();
+						let hash = startRemoteGame(true);
+						alert(hash);
+					}
+					else{
+
+						Reversi.isSpectator();
+						startRemoteGame(false, props[1]);
 					}
 				}
 			}
 
 			for(var x = 1; x <= 8; x++){
-								
+
 				this.board[x] = {};
-				
+
 				for(var y = 1; y <= 8; y++){
-					
+
 					this.board[x][y] = 0;
 				}
 			}
@@ -65,19 +113,9 @@ var Reversi = {};
 			Output.displayStones(this.board);
 			Output.displayStatus(this.current);
 
-			if(Entity.bot === 0){
-
-				setTimeout(function(){
-
-					Bot.takeTurn(Entity.board, Entity.bot);
-				}, 1000);
-			}
-			else if(this.current === this.bot){
-
-				Bot.takeTurn(this.board, this.current);
-			}
+			Reversi.nextTurn();
 		},
-		
+
 		flipStones: function(square){
 
 			function flipDirection(ox, oy, dir_x, dir_y){
@@ -142,7 +180,68 @@ var Reversi = {};
 			checkDirection(square.x, square.y, -1, 1);
 		}
 	};
-	
+
+	Reversi.nextTurn = function(){
+
+		if(Entity.spectator){
+
+			return;
+		}
+
+		var player = Entity.getCurrentPlayer();
+
+		if(Entity.botgame){
+
+			setTimeout(function(){
+
+				Bot.takeTurn(Entity.board, player.side);
+			}, 1000);
+		}
+
+		else if(player.type === 'bot'){
+
+			Bot.takeTurn(Entity.board, player.side);
+		}
+
+		else {
+
+			Entity.awaitingInput = true;
+		}
+	};
+
+	Reversi.isHost = function(){
+
+		Entity.host = true;
+	};
+	Reversi.isSpectator = function(){
+
+		Entity.spectator = true;
+		Entity.awaitingInput = false;
+	};
+	Reversi.remoteMessage = function(event){
+
+		if(!Entity.spectator){
+
+			return;
+		}
+
+		let data = JSON.parse(event.data);
+
+		Output.displayStones(data.board);
+	};
+
+	Reversi.userClickSquare = function(square){
+
+		if(!Entity.awaitingInput){
+
+			return;
+		}
+
+		Entity.awaitingInput = false;
+
+		Reversi.clickSquare(square);
+	};
+
 	Reversi.clickSquare = function(square){
 
 		if(Rules.isAllowed(square, Entity.board)){
@@ -151,49 +250,32 @@ var Reversi = {};
 			Entity.flipStones(square);
 			var new_player = Rules.getNextPlayer(Entity.board, Entity.current);
 
+			Entity.current = new_player;
+			Output.displayStones(Entity.board);
+
+			if(Entity.host && dataChannel){
+
+				dataChannel.send(JSON.stringify({board: Entity.board}));
+			}
+
 			if(new_player === 0){
 
 				Output.displayWinner(
 					Rules.determineWinner(Entity.board)
 				);
-			}
-			else{
 
-				Entity.current = new_player;
-				Entity.board = Rules.addOptions(Entity.board, Entity.current);
-				Output.displayStatus(Entity.current);
+				return;
 			}
 
-			Output.displayStones(Entity.board);
+			Entity.board = Rules.addOptions(Entity.board, Entity.current);
+			Output.displayStatus(Entity.current);
 
-			if(Entity.bot === 0 && new_player !== 0){
-
-				setTimeout(function(){
-
-					Bot.takeTurn(Entity.board, Entity.current);
-				}, 1000);
-			}
-
-			else if(new_player === Entity.bot){
-
-				Bot.takeTurn(Entity.board, Entity.current);
-			}
-		}
-		else if(Entity.bot === 0){
-
-			setTimeout(function(){
-
-				Bot.takeTurn(Entity.board, Entity.current);
-			}, 1000);
-		}
-		else if(Entity.current === Entity.bot){
-
-			Bot.takeTurn(Entity.board, Entity.current);
+			Reversi.nextTurn();
 		}
 	};
-	
+
 	Reversi.getColor = function(number){
-		
+
 		return Entity.states[number];
 	};
 

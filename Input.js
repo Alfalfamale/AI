@@ -19,7 +19,7 @@
 				var pos = this.determineCoordinates(event);
 				var square = this.determineSquare(pos);
 
-				Reversi.clickSquare(square);
+				Reversi.userClickSquare(square);
 			}.bind(this));
 		},
 
